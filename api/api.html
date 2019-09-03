@@ -1,0 +1,597 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>BMLIB应用程序接口 &mdash; SophonInference  documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="SophonInference  documentation" href="../index.html"/>
+        <link rel="prev" title="BMLIB简介" href="../quickstart/intr.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> SophonInference
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/version.html">版本信息</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/intr.html">BMLIB简介</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="">BMLIB应用程序接口</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">公共定义</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bm-dev-getcount">bm_dev_getcount</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bm-dev-request">bm_dev_request</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bm-malloc-neuron-device">bm_malloc_neuron_device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bm-malloc-device-dword">bm_malloc_device_dword</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bm-malloc-device-byte">bm_malloc_device_byte</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bm-free-device">bm_free_device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bm-memcpy-s2d">bm_memcpy_s2d</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bm-memcpy-d2s">bm_memcpy_d2s</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bmlib-log-set-level">bmlib_log_set_level</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bmlib-log-set-callback">bmlib_log_set_callback</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">SophonInference</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>BMLIB应用程序接口</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/api/api.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="bmlib">
+<h1>BMLIB应用程序接口<a class="headerlink" href="#bmlib" title="Permalink to this headline">¶</a></h1>
+<p>BMLIB应用程序库提供访问SC3板上内存和BM1682 TPU计算能力的接口。</p>
+<div class="section" id="id1">
+<h2>公共定义<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>BMLIB中提供其他模块和上层接口都可以使用的宏定义和结构。</p>
+<blockquote>
+<div><div class="highlight-c"><div class="highlight"><pre><span class="k">typedef</span> <span class="k">struct</span> <span class="n">bm_context</span> <span class="o">*</span>  <span class="n">bm_handle_t</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>bm_handle_t是BMLIB中的基本结构， 它是访问SC3设备的句柄。</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="k">typedef</span> <span class="k">enum</span> <span class="p">{</span>
+    <span class="n">BM_SUCCESS</span>                 <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">BM_ERR_DEVNOTREADY</span>         <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>   <span class="cm">/* Device not ready yet */</span>
+    <span class="n">BM_ERR_FAILURE</span>             <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>   <span class="cm">/* General failure */</span>
+    <span class="n">BM_ERR_TIMEOUT</span>             <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>   <span class="cm">/* Timeout */</span>
+    <span class="n">BM_ERR_PARAM</span>               <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>   <span class="cm">/* Parameters invalid */</span>
+    <span class="n">BM_ERR_NOMEM</span>               <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>   <span class="cm">/* Not enough memory */</span>
+    <span class="n">BM_ERR_DATA</span>                <span class="o">=</span> <span class="mi">6</span><span class="p">,</span>   <span class="cm">/* Data error */</span>
+    <span class="n">BM_ERR_BUSY</span>                <span class="o">=</span> <span class="mi">7</span><span class="p">,</span>   <span class="cm">/* Busy */</span>
+    <span class="n">BM_ERR_NOFEATURE</span>           <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>    <span class="cm">/* Not supported yet */</span>
+    <span class="n">BM_NOT_SUPPORTED</span>           <span class="o">=</span> <span class="mi">9</span><span class="p">,</span>
+    <span class="n">BM_ERR_VERSION</span>             <span class="o">=</span> <span class="mi">10</span>   <span class="cm">/* version mis-match between bmlib and driver */</span>
+<span class="p">}</span> <span class="n">bm_status_t</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>bm_status_t是BMLIB应用程序接口返回值的通用定义。</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="k">typedef</span> <span class="k">struct</span> <span class="n">bm_mem_desc</span> <span class="p">{</span>
+    <span class="k">union</span> <span class="p">{</span>
+        <span class="k">struct</span> <span class="p">{</span>
+                <span class="kt">unsigned</span> <span class="kt">long</span>         <span class="n">device_addr</span><span class="p">;</span>
+                <span class="kt">unsigned</span> <span class="kt">int</span>         <span class="n">reserved</span><span class="p">;</span>
+                <span class="kt">int</span>         <span class="n">dmabuf_fd</span><span class="p">;</span>
+        <span class="p">}</span> <span class="n">device</span><span class="p">;</span>
+
+        <span class="k">struct</span> <span class="p">{</span>
+                <span class="kt">void</span> <span class="o">*</span>      <span class="n">system_addr</span><span class="p">;</span>
+                <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">reserved0</span><span class="p">;</span>
+                <span class="kt">int</span>         <span class="n">reserved1</span><span class="p">;</span>
+        <span class="p">}</span> <span class="n">system</span><span class="p">;</span>
+    <span class="p">}</span> <span class="n">u</span><span class="p">;</span>
+
+    <span class="n">bm_mem_flags_t</span>         <span class="n">flags</span><span class="p">;</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span>                    <span class="n">size</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">bm_mem_desc_t</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>bm_mem_desc_t描述一段内存块的结构体，用于描述SC3板载内存或系统内存。</p>
+</div></blockquote>
+</div>
+<div class="section" id="bm-dev-getcount">
+<h2>bm_dev_getcount<a class="headerlink" href="#bm-dev-getcount" title="Permalink to this headline">¶</a></h2>
+<p>此函数用于获取当前计算机安装的SC3板卡的数量。</p>
+<blockquote>
+<div><div class="highlight-c"><div class="highlight"><pre><span class="n">bm_status_t</span> <span class="nf">bm_dev_getcount</span><span class="p">(</span><span class="kt">int</span><span class="o">*</span> <span class="n">count</span><span class="p">);</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>参数描述</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="26%" />
+<col width="74%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>参数</strong></th>
+<th class="head"><strong>描述</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>count</td>
+<td>指向int型变量的指针，存放获取的板卡数量。</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</div>
+<div class="section" id="bm-dev-request">
+<h2>bm_dev_request<a class="headerlink" href="#bm-dev-request" title="Permalink to this headline">¶</a></h2>
+<p>此函数用于申请对某个SC3板卡上的访问。</p>
+<blockquote>
+<div><div class="highlight-c"><div class="highlight"><pre><span class="n">bm_status_t</span> <span class="nf">bm_dev_request</span><span class="p">(</span><span class="n">bm_handle_t</span> <span class="o">*</span><span class="n">handle</span><span class="p">,</span> <span class="kt">int</span> <span class="n">devid</span><span class="p">);</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>参数描述</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="77%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>参数</strong></th>
+<th class="head"><strong>描述</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>handle</td>
+<td>指向bm_handle_t结构的指针，存放申请设备返回句柄。</td>
+</tr>
+<tr class="row-odd"><td>devid</td>
+<td>申请使用的SC3板卡序号。</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</div>
+<div class="section" id="bm-malloc-neuron-device">
+<h2>bm_malloc_neuron_device<a class="headerlink" href="#bm-malloc-neuron-device" title="Permalink to this headline">¶</a></h2>
+<p>此函数用于以neuron为单位申请SC3板卡上内存。</p>
+<blockquote>
+<div><div class="highlight-c"><div class="highlight"><pre><span class="n">bm_status_t</span> <span class="nf">bm_malloc_neuron_device</span><span class="p">(</span>
+    <span class="n">bm_handle_t</span>      <span class="n">handle</span><span class="p">,</span>
+    <span class="n">bm_device_mem_t</span> <span class="o">*</span><span class="n">pmem</span><span class="p">,</span>
+    <span class="kt">int</span>              <span class="n">n</span><span class="p">,</span>
+    <span class="kt">int</span>              <span class="n">c</span><span class="p">,</span>
+    <span class="kt">int</span>              <span class="n">h</span><span class="p">,</span>
+    <span class="kt">int</span>              <span class="n">w</span><span class="p">);</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>参数描述</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="32%" />
+<col width="68%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>参数</strong></th>
+<th class="head"><strong>描述</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>handle</td>
+<td>设备申请返回的句柄指针</td>
+</tr>
+<tr class="row-odd"><td>pmem</td>
+<td>内存描述结构指针，用于存放申请结果</td>
+</tr>
+<tr class="row-even"><td>n</td>
+<td>张量参数n</td>
+</tr>
+<tr class="row-odd"><td>c</td>
+<td>张量参数c</td>
+</tr>
+<tr class="row-even"><td>h</td>
+<td>张量参数h</td>
+</tr>
+<tr class="row-odd"><td>w</td>
+<td>张量参数w</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</div>
+<div class="section" id="bm-malloc-device-dword">
+<h2>bm_malloc_device_dword<a class="headerlink" href="#bm-malloc-device-dword" title="Permalink to this headline">¶</a></h2>
+<p>此接口用于以dword为单位申请板上内存。</p>
+<blockquote>
+<div><div class="highlight-c"><div class="highlight"><pre><span class="n">bm_status_t</span> <span class="nf">bm_malloc_device_dword</span><span class="p">(</span>
+    <span class="n">bm_handle_t</span>      <span class="n">handle</span><span class="p">,</span>
+    <span class="n">bm_device_mem_t</span> <span class="o">*</span><span class="n">pmem</span><span class="p">,</span>
+    <span class="kt">int</span>              <span class="n">count</span><span class="p">);</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>参数描述</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="72%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>参数</strong></th>
+<th class="head"><strong>描述</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>handle</td>
+<td>设备申请返回的句柄指针</td>
+</tr>
+<tr class="row-odd"><td>pmem</td>
+<td>内存描述结构指针，用于存放申请结果</td>
+</tr>
+<tr class="row-even"><td>ocunt</td>
+<td>申请的dword个数</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</div>
+<div class="section" id="bm-malloc-device-byte">
+<h2>bm_malloc_device_byte<a class="headerlink" href="#bm-malloc-device-byte" title="Permalink to this headline">¶</a></h2>
+<p>此接口用于以byte为单位申请板上内存。</p>
+<blockquote>
+<div><div class="highlight-c"><div class="highlight"><pre><span class="n">bm_status_t</span> <span class="nf">bm_malloc_device_byte</span><span class="p">(</span>
+    <span class="n">bm_handle_t</span>      <span class="n">handle</span><span class="p">,</span>
+    <span class="n">bm_device_mem_t</span> <span class="o">*</span><span class="n">pmem</span><span class="p">,</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span>     <span class="n">size</span><span class="p">);</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>参数描述</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="72%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>参数</strong></th>
+<th class="head"><strong>描述</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>handle</td>
+<td>设备申请返回的句柄指针</td>
+</tr>
+<tr class="row-odd"><td>pmem</td>
+<td>内存描述结构指针，用于存放申请结果</td>
+</tr>
+<tr class="row-even"><td>ocunt</td>
+<td>申请内存的大小</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</div>
+<div class="section" id="bm-free-device">
+<h2>bm_free_device<a class="headerlink" href="#bm-free-device" title="Permalink to this headline">¶</a></h2>
+<p>此接口用于释放申请出来的板上内存。</p>
+<blockquote>
+<div><div class="highlight-c"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">bm_free_device</span><span class="p">(</span>
+    <span class="n">bm_handle_t</span>      <span class="n">handle</span><span class="p">,</span>
+    <span class="n">bm_device_mem_t</span>  <span class="n">mem</span><span class="p">);</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>参数描述</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="34%" />
+<col width="66%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>参数</strong></th>
+<th class="head"><strong>描述</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>handle</td>
+<td>设备申请返回的句柄指针</td>
+</tr>
+<tr class="row-odd"><td>mem</td>
+<td>指向申请出来的内存描述结构体</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</div>
+<div class="section" id="bm-memcpy-s2d">
+<h2>bm_memcpy_s2d<a class="headerlink" href="#bm-memcpy-s2d" title="Permalink to this headline">¶</a></h2>
+<p>此函数用于从主机内存拷贝数据到SC3板上内存，拷贝的大小存放与目的内存描述结构内。</p>
+<blockquote>
+<div><div class="highlight-c"><div class="highlight"><pre><span class="n">bm_status_t</span> <span class="nf">bm_memcpy_s2d</span><span class="p">(</span>
+    <span class="n">bm_handle_t</span>      <span class="n">handle</span><span class="p">,</span>
+    <span class="n">bm_device_mem_t</span>  <span class="n">dst</span><span class="p">,</span>
+    <span class="kt">void</span>            <span class="o">*</span><span class="n">src</span><span class="p">);</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>参数描述</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="39%" />
+<col width="61%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>参数</strong></th>
+<th class="head"><strong>描述</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>handle</td>
+<td>设备申请返回的句柄指针</td>
+</tr>
+<tr class="row-odd"><td>dst</td>
+<td>目标内存描述结构体</td>
+</tr>
+<tr class="row-even"><td>src</td>
+<td>源主机内存的地址</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</div>
+<div class="section" id="bm-memcpy-d2s">
+<h2>bm_memcpy_d2s<a class="headerlink" href="#bm-memcpy-d2s" title="Permalink to this headline">¶</a></h2>
+<p>此函数用于从SC3板上内存拷贝数据到系统内存。为保证TPU可能修改的内存完成修改，此函数中包含了对API的SYNC操作，等待发送的API完成才进行拷贝。</p>
+<blockquote>
+<div><div class="highlight-c"><div class="highlight"><pre><span class="n">bm_status_t</span> <span class="nf">bm_memcpy_d2s</span><span class="p">(</span>
+    <span class="n">bm_handle_t</span>      <span class="n">handle</span><span class="p">,</span>
+    <span class="kt">void</span>            <span class="o">*</span><span class="n">dst</span><span class="p">,</span>
+    <span class="n">bm_device_mem_t</span>  <span class="n">src</span><span class="p">);</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>参数描述</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="36%" />
+<col width="64%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>参数</strong></th>
+<th class="head"><strong>描述</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>handle</td>
+<td>设备申请返回的句柄指针</td>
+</tr>
+<tr class="row-odd"><td>dst</td>
+<td>目标主机内存地址</td>
+</tr>
+<tr class="row-even"><td>src</td>
+<td>源板上内存的内存描述结构体</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</div>
+<div class="section" id="bmlib-log-set-level">
+<h2>bmlib_log_set_level<a class="headerlink" href="#bmlib-log-set-level" title="Permalink to this headline">¶</a></h2>
+<p>此函数用于设置BMLIB模块的日志打印级别，级别小于设置的级别才会打印出来。</p>
+<blockquote>
+<div><div class="highlight-c"><div class="highlight"><pre><span class="cp">#define BMLIB_LOG_QUIET    -8</span>
+<span class="cp">#define BMLIB_LOG_PANIC     0</span>
+<span class="cp">#define BMLIB_LOG_FATAL     8</span>
+<span class="cp">#define BMLIB_LOG_ERROR    16</span>
+<span class="cp">#define BMLIB_LOG_WARNING  24</span>
+<span class="cp">#define BMLIB_LOG_INFO     32</span>
+<span class="cp">#define BMLIB_LOG_VERBOSE  40</span>
+<span class="cp">#define BMLIB_LOG_DEBUG    48</span>
+<span class="cp">#define BMLIB_LOG_TRACE    56</span>
+
+<span class="kt">void</span> <span class="nf">bmlib_log_set_level</span><span class="p">(</span><span class="kt">int</span> <span class="n">level</span><span class="p">);</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>参数描述</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="42%" />
+<col width="58%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>参数</strong></th>
+<th class="head"><strong>描述</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>level</td>
+<td>欲设置的调试信息级别</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</div>
+<div class="section" id="bmlib-log-set-callback">
+<h2>bmlib_log_set_callback<a class="headerlink" href="#bmlib-log-set-callback" title="Permalink to this headline">¶</a></h2>
+<p>此函数用于设置默认的日志打印函数，通过设置日志打印函数，BMLIB中的日志打印改由此回调函数打印。</p>
+<blockquote>
+<div><div class="highlight-c"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">bmlib_log_set_callback</span><span class="p">(</span><span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">callback</span><span class="p">)(</span><span class="kt">int</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span><span class="p">,</span> <span class="kt">va_list</span> <span class="n">args</span><span class="p">));</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="../quickstart/intr.html" class="btn btn-neutral" title="BMLIB简介" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Sophon.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -1,0 +1,273 @@
+BMLIB应用程序接口
+=================================
+
+BMLIB应用程序库提供访问SC3板上内存和BM1682 TPU计算能力的接口。 
+
+公共定义
+-------------------------
+
+BMLIB中提供其他模块和上层接口都可以使用的宏定义和结构。 
+
+    .. code-block:: c 
+
+        typedef struct bm_context *  bm_handle_t;
+
+    bm_handle_t是BMLIB中的基本结构， 它是访问SC3设备的句柄。
+
+
+    .. code-block:: c
+
+        typedef enum {
+            BM_SUCCESS                 = 0,
+            BM_ERR_DEVNOTREADY         = 1,   /* Device not ready yet */
+            BM_ERR_FAILURE             = 2,   /* General failure */
+            BM_ERR_TIMEOUT             = 3,   /* Timeout */
+            BM_ERR_PARAM               = 4,   /* Parameters invalid */
+            BM_ERR_NOMEM               = 5,   /* Not enough memory */
+            BM_ERR_DATA                = 6,   /* Data error */
+            BM_ERR_BUSY                = 7,   /* Busy */
+            BM_ERR_NOFEATURE           = 8,    /* Not supported yet */
+            BM_NOT_SUPPORTED           = 9,
+            BM_ERR_VERSION             = 10   /* version mis-match between bmlib and driver */
+        } bm_status_t;
+
+    bm_status_t是BMLIB应用程序接口返回值的通用定义。
+
+    .. code-block:: c
+
+        typedef struct bm_mem_desc {
+            union {
+                struct {
+                        unsigned long         device_addr;
+                        unsigned int         reserved;
+                        int         dmabuf_fd;
+                } device;
+
+                struct {
+                        void *      system_addr;
+                        unsigned int reserved0;
+                        int         reserved1;
+                } system;
+            } u;
+
+            bm_mem_flags_t         flags;
+            unsigned int                    size;
+        } bm_mem_desc_t;
+
+
+    bm_mem_desc_t描述一段内存块的结构体，用于描述SC3板载内存或系统内存。
+
+bm_dev_getcount
+----------------
+
+此函数用于获取当前计算机安装的SC3板卡的数量。
+
+    .. code-block:: c
+
+        bm_status_t bm_dev_getcount(int* count);
+
+参数描述
+	
+    ===============    =====================
+     **参数**           **描述**
+    ===============    =====================
+     count              指向int型变量的指针，存放获取的板卡数量。
+    ===============    =====================
+
+
+bm_dev_request
+----------------
+
+此函数用于申请对某个SC3板卡上的访问。
+
+    .. code-block:: c
+
+        bm_status_t bm_dev_request(bm_handle_t *handle, int devid);
+
+参数描述
+
+    ===============    =====================
+     **参数**           **描述**
+    ===============    =====================
+     handle             指向bm_handle_t结构的指针，存放申请设备返回句柄。
+     devid              申请使用的SC3板卡序号。
+    ===============    =====================
+
+bm_malloc_neuron_device
+-------------------------
+
+此函数用于以neuron为单位申请SC3板卡上内存。
+
+    .. code-block:: c
+
+        bm_status_t bm_malloc_neuron_device(
+            bm_handle_t      handle,
+            bm_device_mem_t *pmem,
+            int              n,
+            int              c,
+            int              h,
+            int              w);
+
+
+参数描述
+
+    ================   ==================
+    **参数**            **描述**
+    ================   ==================
+    handle             设备申请返回的句柄指针
+    pmem               内存描述结构指针，用于存放申请结果
+    n                  张量参数n
+    c                  张量参数c
+    h                  张量参数h
+    w                  张量参数w
+    ================   ==================
+
+bm_malloc_device_dword
+--------------------------
+
+此接口用于以dword为单位申请板上内存。
+
+    .. code-block:: c
+	
+        bm_status_t bm_malloc_device_dword(
+            bm_handle_t      handle,
+            bm_device_mem_t *pmem,
+            int              count);
+
+	
+参数描述
+
+    ==============    ====================================
+    **参数**           **描述**
+    ==============    ====================================
+    handle             设备申请返回的句柄指针
+    pmem               内存描述结构指针，用于存放申请结果
+    ocunt              申请的dword个数
+    ==============    ====================================
+	
+
+bm_malloc_device_byte
+--------------------------
+
+此接口用于以byte为单位申请板上内存。
+
+    .. code-block:: c
+	
+        bm_status_t bm_malloc_device_byte(
+            bm_handle_t      handle,
+            bm_device_mem_t *pmem,
+            unsigned int     size);
+
+		
+参数描述
+
+    ==============    ====================================
+    **参数**           **描述**
+    ==============    ====================================
+    handle             设备申请返回的句柄指针
+    pmem               内存描述结构指针，用于存放申请结果
+    ocunt              申请内存的大小
+    ==============    ====================================
+
+bm_free_device
+--------------------------
+
+此接口用于释放申请出来的板上内存。
+
+    .. code-block:: c
+
+        void bm_free_device(
+            bm_handle_t      handle,
+            bm_device_mem_t  mem);
+
+
+参数描述
+
+    ===============    =====================
+     **参数**           **描述**
+    ===============    =====================
+     handle             设备申请返回的句柄指针
+     mem                指向申请出来的内存描述结构体
+    ===============    =====================
+
+	
+bm_memcpy_s2d
+--------------------------
+
+此函数用于从主机内存拷贝数据到SC3板上内存，拷贝的大小存放与目的内存描述结构内。
+
+    .. code-block:: c
+	
+        bm_status_t bm_memcpy_s2d(
+            bm_handle_t      handle,
+            bm_device_mem_t  dst,
+            void            *src);
+
+
+参数描述
+	
+    ===============    =====================
+     **参数**           **描述**
+    ===============    =====================
+     handle             设备申请返回的句柄指针
+     dst                目标内存描述结构体
+     src                源主机内存的地址
+    ===============    =====================
+
+bm_memcpy_d2s
+--------------------------
+
+此函数用于从SC3板上内存拷贝数据到系统内存。为保证TPU可能修改的内存完成修改，此函数中包含了对API的SYNC操作，等待发送的API完成才进行拷贝。
+
+    .. code-block:: c
+
+        bm_status_t bm_memcpy_d2s(
+            bm_handle_t      handle,
+            void            *dst,
+            bm_device_mem_t  src);
+
+参数描述
+	
+    ===============    =====================
+     **参数**           **描述**
+    ===============    =====================
+     handle             设备申请返回的句柄指针
+     dst                目标主机内存地址
+     src                源板上内存的内存描述结构体
+    ===============    =====================
+
+bmlib_log_set_level
+---------------------
+
+此函数用于设置BMLIB模块的日志打印级别，级别小于设置的级别才会打印出来。
+
+    .. code-block:: c
+
+        #define BMLIB_LOG_QUIET    -8
+        #define BMLIB_LOG_PANIC     0
+        #define BMLIB_LOG_FATAL     8
+        #define BMLIB_LOG_ERROR    16
+        #define BMLIB_LOG_WARNING  24
+        #define BMLIB_LOG_INFO     32
+        #define BMLIB_LOG_VERBOSE  40
+        #define BMLIB_LOG_DEBUG    48
+        #define BMLIB_LOG_TRACE    56
+
+        void bmlib_log_set_level(int level);
+
+参数描述
+	
+    ===============    =====================
+     **参数**           **描述**
+    ===============    =====================
+     level              欲设置的调试信息级别
+    ===============    =====================
+
+bmlib_log_set_callback
+-----------------------
+
+此函数用于设置默认的日志打印函数，通过设置日志打印函数，BMLIB中的日志打印改由此回调函数打印。
+
+    .. code-block:: c
+
+        void bmlib_log_set_callback(void (*callback)(int, const char*, va_list args));
